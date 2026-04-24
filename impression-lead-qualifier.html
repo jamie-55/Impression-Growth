@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Impression — Lead Qualifier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f4f6fb; font-family: "Red Hat Display", sans-serif; color: #1b2443; min-height: 100vh; }
+    .header { background: #1b2443; padding: 0 40px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .header-logo { height: 22px; filter: brightness(0) invert(1); }
+    .header-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #24b6e0; }
+    .wrap { max-width: 780px; margin: 0 auto; padding: 48px 28px 80px; }
+    .page-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #107de8; margin-bottom: 10px; }
+    .page-title { font-size: 34px; font-weight: 900; color: #1b2443; line-height: 1.1; margin-bottom: 8px; }
+    .page-sub { font-size: 14px; color: #56566a; margin-bottom: 40px; }
+    .field-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #56566a; margin-bottom: 8px; display: block; }
+    textarea { width: 100%; background: #fff; border: 1.5px solid #dce8f8; border-radius: 8px; padding: 18px; font-family: "Red Hat Display", sans-serif; font-size: 14px; line-height: 1.7; color: #1b2443; resize: vertical; min-height: 160px; outline: none; transition: border-color 0.2s; }
+    textarea:focus { border-color: #107de8; }
+    textarea::placeholder { color: #b0bcd4; }
+    .btn-row { display: flex; gap: 10px; margin-top: 14px; align-items: center; }
+    .btn-main { background: #107de8; color: #fff; border: none; border-radius: 6px; padding: 13px 28px; font-family: "Red Hat Display", sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; transition: background 0.15s, transform 0.1s; }
+    .btn-main:hover:not(:disabled) { background: #0d6bc9; }
+    .btn-main:active { transform: scale(0.98); }
+    .btn-main:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-secondary { background: transparent; border: 1.5px solid #dce8f8; color: #56566a; border-radius: 6px; padding: 13px 20px; font-family: "Red Hat Display", sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; display: none; }
+    .btn-secondary:hover { border-color: #107de8; color: #107de8; }
+    .loader-wrap { margin-top: 24px; display: none; }
+    .loader-track { height: 3px; background: #dce8f8; border-radius: 2px; overflow: hidden; }
+    .loader-fill { height: 100%; width: 35%; background: linear-gradient(90deg, transparent, #107de8, transparent); animation: sweep 1.3s ease-in-out infinite; }
+    @keyframes sweep { 0% { transform: translateX(-200%); } 100% { transform: translateX(450%); } }
+    .loader-text { font-size: 12px; color: #56566a; margin-top: 12px; font-weight: 500; }
+    .divider { border: none; border-top: 1.5px solid #dce8f8; margin: 40px 0; display: none; }
+    .results { display: none; flex-direction: column; gap: 16px; }
+    .fit-card { border-radius: 8px; padding: 24px 28px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .fit-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.6; margin-bottom: 6px; }
+    .fit-rating { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+    .fit-action { font-size: 13px; font-weight: 500; opacity: 0.8; }
+    .fit-pill { font-size: 11px; font-weight: 700; padding: 6px 16px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.04em; text-transform: uppercase; }
+    .card { background: #fff; border: 1.5px solid #dce8f8; border-radius: 8px; padding: 24px; }
+    .card-title { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #56566a; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1.5px solid #e9f3fc; }
+    .snap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+    .snap-key { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #56566a; margin-bottom: 4px; }
+    .snap-val { font-size: 14px; color: #1b2443; font-weight: 500; }
+    .snap-summary { font-size: 13px; color: #56566a; line-height: 1.75; padding-top: 16px; border-top: 1.5px solid #e9f3fc; }
+    .rationale { font-size: 14px; color: #56566a; line-height: 1.8; }
+    .email-meta { font-size: 12px; color: #56566a; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1.5px solid #e9f3fc; font-weight: 500; }
+    .email-meta strong { color: #1b2443; }
+    .email-body { font-size: 14px; color: #1b2443; line-height: 1.95; white-space: pre-wrap; }
+    .copy-row { display: flex; justify-content: flex-end; margin-top: 18px; padding-top: 14px; border-top: 1.5px solid #e9f3fc; }
+    .btn-copy { background: transparent; border: 1.5px solid #dce8f8; color: #56566a; border-radius: 6px; padding: 8px 18px; font-family: "Red Hat Display", sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+    .btn-copy:hover { border-color: #107de8; color: #107de8; }
+    .btn-copy.copied { border-color: #107de8; color: #107de8; background: #e9f3fc; }
+    .error-box { background: #fef0f0; border: 1.5px solid #f05454; border-radius: 8px; padding: 14px 18px; font-size: 13px; color: #c0392b; margin-top: 16px; display: none; font-weight: 500; }
+    #snapshot-card { display: none; }
+    .footer { background: #1b2443; padding: 20px 40px; text-align: center; font-size: 11px; color: #56566a; margin-top: 60px; }
+    @media (max-width: 560px) { .snap-grid { grid-template-columns: 1fr; } .fit-card { flex-direction: column; } .wrap { padding: 32px 18px 60px; } .header { padding: 0 20px; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img class="header-logo" src="data:image/png;base64,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" alt="Impression" />
+    <div class="header-tag">Growth Toolkit</div>
+  </div>
+  <div class="wrap">
+    <div class="page-eyebrow">Growth Team</div>
+    <div class="page-title">Lead Qualifier</div>
+    <div class="page-sub">Paste an inbound enquiry. Get a company brief and a draft response.</div>
+    <label class="field-label" for="enquiry">Inbound enquiry</label>
+    <textarea id="enquiry" rows="7" placeholder="Paste the full enquiry here, including their name, company, and what they said..."></textarea>
+    <div class="btn-row">
+      <button class="btn-main" id="qualifyBtn" onclick="qualify()">Qualify Lead</button>
+      <button class="btn-secondary" id="clearBtn" onclick="clearAll()">Clear</button>
+    </div>
+    <div class="loader-wrap" id="loader">
+      <div class="loader-track"><div class="loader-fill"></div></div>
+      <div class="loader-text">Researching company and drafting response...</div>
+    </div>
+    <div class="error-box" id="errorBox"></div>
+    <hr class="divider" id="divider" />
+    <div class="results" id="results">
+      <div class="fit-card" id="fitCard">
+        <div>
+          <div class="fit-eyebrow">Qualification</div>
+          <div class="fit-rating" id="fitRating"></div>
+          <div class="fit-action" id="fitAction"></div>
+        </div>
+        <div class="fit-pill" id="fitPill"></div>
+      </div>
+      <div class="card" id="snapshot-card">
+        <div class="card-title">Company snapshot</div>
+        <div class="snap-grid">
+          <div><div class="snap-key">Company</div><div class="snap-val" id="snapCompany"></div></div>
+          <div><div class="snap-key">Sector</div><div class="snap-val" id="snapSector"></div></div>
+          <div><div class="snap-key">Size</div><div class="snap-val" id="snapSize"></div></div>
+          <div><div class="snap-key">Revenue</div><div class="snap-val" id="snapRevenue"></div></div>
+          <div style="grid-column:1/-1"><div class="snap-key">Market</div><div class="snap-val" id="snapMarket"></div></div>
+        </div>
+        <div class="snap-summary" id="snapSummary"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Why this rating</div>
+        <div class="rationale" id="rationale"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Draft response</div>
+        <div class="email-meta"><strong>Subject:</strong> <span id="emailSubject"></span></div>
+        <div class="email-body" id="emailBody"></div>
+        <div class="copy-row">
+          <button class="btn-copy" id="copyBtn" onclick="copyEmail()">Copy email</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">Impression Digital &mdash; Internal BD Tool</div>
+  <script>
+    const API_KEY = "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";
+    const SYSTEM_PROMPT = `You are a senior business development analyst at Impression Digital, a full-service UK digital marketing agency (120+ people, certified B Corp, offices in Nottingham, London, Manchester, New York). You help Jamie Lawson, Growth Director, qualify inbound leads quickly and draft first responses.
+
+Impression's services: Paid Search, Paid Social, SEO, Digital PR, Content, Creative, CRO, Marketing Science/Analytics, Digital Strategy.
+
+Impression's minimum viable client: £5,000/month retainer minimum. Sweet spot is £8,000-£30,000+/month. Ideal clients are mid-market to enterprise across retail, finance, travel, education, hospitality.
+
+IMMEDIATE DECLINE — do not draft a proper email, just a one-liner politely saying we can't help:
+- Someone trying to sell TO Impression (data, services, partnerships, leads, freelance work)
+- Personal email address (hotmail, gmail, yahoo, etc.) with no company name or "N/A" as company
+- Outreach about a product, dataset, tool or service they want Impression to buy
+- Spam, cold pitch, or anyone who is clearly not a prospective marketing client
+- Local trades / micro businesses (plumbers, electricians, single-location shops)
+- Anyone with no identifiable business or no real brief
+For these, set fit_rating to "Decline", recommended_action to "Decline politely", and keep the draft_email body to one sentence maximum. Set all snapshot fields to "N/A".
+
+RED FLAGS that suggest a pricing deck response (not a call):
+- Small/micro business, startup with no funding
+- Vague or tiny scope
+- No mention of budget or clearly limited context
+- Niche/local business unlikely to hit minimums
+- Education/charity/public sector with likely low budgets (unless LA/national scale)
+
+GREEN FLAGS for a call:
+- Named brand, funded company, or recognisable enterprise
+- Multi-channel or complex brief
+- International scope
+- Mentions existing agency relationship (reviewing = active budget)
+- Specific services listed with clear business context
+- Director/Head level contact
+
+Respond in JSON only. No markdown, no preamble. Return exactly this structure:
+
+{
+  "company_snapshot": {
+    "company": "Company name",
+    "sector": "Sector / industry",
+    "size": "Employee count estimate",
+    "revenue": "Revenue estimate if findable, otherwise Not public",
+    "market": "UK / US / Global / etc",
+    "summary": "2-3 sentence plain English description of what they do"
+  },
+  "fit_rating": "Strong Fit | Potential Fit | Send Pricing Deck | Decline",
+  "fit_rationale": "2-3 sentences on why this rating. Be direct. Call out the risk or opportunity clearly.",
+  "recommended_action": "Book a call | Send pricing deck then wait | Decline politely",
+  "draft_email": {
+    "subject": "Email subject line",
+    "body": "Full email body in Jamie's voice. Warm, direct, professional but not corporate. Opens with Hi [name]. Signs off Thanks, Jamie. No fluff. If booking a call: acknowledge their brief specifically, offer times or suggest they share availability. If sending pricing deck: acknowledge brief, mention you are sending more info on how Impression works and typical investment levels, invite them to come back if the numbers align. Keep it short. Never use bullet points. Never use corporate language."
+  }
+}`;
+    const FIT_CONFIG = {
+      "Strong Fit":        { bg: "#edfaf2", border: "#23b09b", text: "#0c6b58", pill: "#23b09b", pillText: "#fff" },
+      "Potential Fit":     { bg: "#fff8e9", border: "#fab72d", text: "#8a6000", pill: "#fab72d", pillText: "#1b2443" },
+      "Send Pricing Deck": { bg: "#e9f3fc", border: "#107de8", text: "#1b2443", pill: "#107de8", pillText: "#fff" },
+      "Decline":           { bg: "#fef0f0", border: "#f05454", text: "#b91c1c", pill: "#f05454", pillText: "#fff" },
+    };
+    const ACTION_LABEL = {
+      "Book a call": "High priority — book a call",
+      "Send pricing deck then wait": "Send pricing deck, wait to self-qualify",
+      "Decline politely": "No action needed",
+    };
+    let currentEmailBody = "";
+    async function qualify() {
+      const enquiry = document.getElementById("enquiry").value.trim();
+      if (!enquiry) return;
+      setLoading(true); hideResults(); hideError();
+      try {
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-api-key": API_KEY, "anthropic-version": "2023-06-01" },
+          body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: SYSTEM_PROMPT, messages: [{ role: "user", content: "Inbound lead enquiry — analyse and return JSON only:\n\n" + enquiry }] }),
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+        const raw = data.content?.find(b => b.type === "text")?.text || "";
+        const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+        renderResult(parsed);
+      } catch (e) {
+        showError("Something went wrong: " + e.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    function renderResult(r) {
+      const cfg = FIT_CONFIG[r.fit_rating] || FIT_CONFIG["Potential Fit"];
+      const fitCard = document.getElementById("fitCard");
+      fitCard.style.background = cfg.bg;
+      fitCard.style.border = "1.5px solid " + cfg.border;
+      fitCard.style.color = cfg.text;
+      document.getElementById("fitRating").textContent = r.fit_rating;
+      document.getElementById("fitAction").textContent = ACTION_LABEL[r.recommended_action] || r.recommended_action;
+      const pill = document.getElementById("fitPill");
+      pill.textContent = r.recommended_action === "Book a call" ? "Call" : r.recommended_action === "Send pricing deck then wait" ? "Deck" : "Decline";
+      pill.style.background = cfg.pill;
+      pill.style.color = cfg.pillText;
+      const snap = r.company_snapshot;
+      if (snap.company && snap.company !== "N/A") {
+        document.getElementById("snapCompany").textContent = snap.company;
+        document.getElementById("snapSector").textContent = snap.sector;
+        document.getElementById("snapSize").textContent = snap.size;
+        document.getElementById("snapRevenue").textContent = snap.revenue;
+        document.getElementById("snapMarket").textContent = snap.market;
+        document.getElementById("snapSummary").textContent = snap.summary;
+        document.getElementById("snapshot-card").style.display = "block";
+      } else {
+        document.getElementById("snapshot-card").style.display = "none";
+      }
+      document.getElementById("rationale").textContent = r.fit_rationale;
+      document.getElementById("emailSubject").textContent = r.draft_email.subject;
+      document.getElementById("emailBody").textContent = r.draft_email.body;
+      currentEmailBody = r.draft_email.body;
+      document.getElementById("divider").style.display = "block";
+      document.getElementById("results").style.display = "flex";
+      document.getElementById("clearBtn").style.display = "inline-block";
+      setTimeout(() => document.getElementById("divider").scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+    }
+    function copyEmail() {
+      navigator.clipboard.writeText(currentEmailBody).then(() => {
+        const btn = document.getElementById("copyBtn");
+        btn.textContent = "Copied"; btn.classList.add("copied");
+        setTimeout(() => { btn.textContent = "Copy email"; btn.classList.remove("copied"); }, 2000);
+      });
+    }
+    function clearAll() {
+      document.getElementById("enquiry").value = "";
+      hideResults(); hideError();
+      document.getElementById("clearBtn").style.display = "none";
+      currentEmailBody = "";
+    }
+    function setLoading(on) {
+      document.getElementById("loader").style.display = on ? "block" : "none";
+      document.getElementById("qualifyBtn").disabled = on;
+      document.getElementById("qualifyBtn").textContent = on ? "Analysing..." : "Qualify Lead";
+      if (on) document.getElementById("clearBtn").style.display = "inline-block";
+    }
+    function hideResults() { document.getElementById("divider").style.display = "none"; document.getElementById("results").style.display = "none"; }
+    function showError(msg) { const el = document.getElementById("errorBox"); el.textContent = msg; el.style.display = "block"; }
+    function hideError() { document.getElementById("errorBox").style.display = "none"; }
+  </script>
+</body>
+</html>
